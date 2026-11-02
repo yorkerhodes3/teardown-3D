@@ -65,7 +65,7 @@ const VIEWS = [
   {tx: 0, ty: SY + 0.12, tz: BENCH[2], az: 38, el: 27, d: 2.7},
   {tx: 0, ty: SY + 0.2, tz: BENCH[2] - 0.02, az: 36, el: 30, d: 2.95},
   {tx: 0, ty: SY + 0.22, tz: BENCH[2] - 0.02, az: 33, el: 33, d: 3.2},
-  {tx: 0, ty: SY + 0.26, tz: BENCH[2] - 0.02, az: 30, el: 35, d: 3.35},
+  {tx: 0, ty: SY + 0.26, tz: BENCH[2] + 0.04, az: 30, el: 36, d: 3.7},
 ];
 const KEYS = ['tx', 'ty', 'tz', 'az', 'el', 'd'];
 const lerpView = (a, b, k) => Object.fromEntries(KEYS.map((key) => [key, a[key] + (b[key] - a[key]) * k]));
@@ -76,7 +76,7 @@ export function viewForX(X, t = 0) {
   v.az += 3 * Math.sin(t * 0.21);
   v.el += 1.2 * Math.sin(t * 0.17 + 1);
   v.sx = 0;
-  v.sy = -12;
+  v.sy = -12 - 40 * clamp(X - 2, 0, 1);
   return v;
 }
 // camera presets: same target and distance as the auto view, a fixed direction
@@ -84,8 +84,8 @@ export const PRESET = {front: {az: 0, el: 6}, side: {az: 90, el: 10}, top: {az: 
 /** Pull a view onto a part: centre it, close in to a distance that fits its size. k 0..1. */
 export function focusView(v, c, size, k) {
   if (k <= 0 || !c) return v;
-  const d = clamp(size * 3.4, 0.55, 2.2);
-  return {...v, tx: v.tx + (c.x - v.tx) * k, ty: v.ty + (c.y - v.ty) * k, tz: v.tz + (c.z - v.tz) * k, d: v.d + (d - v.d) * k, sx: v.sx + (-150 - v.sx) * k, sy: v.sy + (0 - v.sy) * k};
+  const d = clamp(0.9 + size * 4.5, 1.5, 2.9);
+  return {...v, tx: v.tx + (c.x - v.tx) * k, ty: v.ty + (c.y - v.ty) * k, tz: v.tz + (c.z - v.tz) * k, d: v.d + (d - v.d) * k, el: v.el + (Math.max(v.el, 50) - v.el) * k, sx: v.sx + (-120 - v.sx) * k, sy: v.sy + (-30 - v.sy) * k};
 }
 
 // ------------------------------------------------------------ the operator's pointer
@@ -192,13 +192,20 @@ export function makeConsoleFrame(ui, st) {
     sides.forEach((list, s) => {
       list.sort((a, b) => a.at[1] - b.at[1]);
       const n = list.length;
-      list.forEach((p, i) => {
-        const y = clamp(p.at[1] - 40, 140, 700);
-        const yy = n > 1 ? Math.max(y, 150 + i * 70) : y;
-        p.label = s ? [1250, Math.min(yy, 700 - (n - 1 - i) * 70)] : [340, Math.min(yy, 700 - (n - 1 - i) * 70)];
+      const GAP = 46;
+      let y = 130;
+      for (const p of list) {
+        y = Math.max(y, clamp(p.at[1] - 40, 130, 700));
+        p.label = [s ? 1250 : 340, y];
+        y += GAP;
+      }
+      // pushed past the bottom: shift the stack back up
+      const over = list.length ? list[list.length - 1].label[1] - 700 : 0;
+      if (over > 0) for (const p of list) p.label[1] -= over;
+      for (const p of list) {
         p.right = !!s;
-        p.w = Math.max(90, Math.min(190, p.name.length * 6.8));
-      });
+        p.w = Math.max(90, Math.min(210, Math.max(p.name.length * 6.8, (p.sub || '').length * 7.8)));
+      }
     });
     const sel = select;
     const p = serverPower(u);

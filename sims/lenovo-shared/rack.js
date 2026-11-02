@@ -623,7 +623,7 @@ export function buildRack() {
       const focus = (sel && ops.isolate) || ops.riskView;
       if (focus) {
         const keep = (sel && ops.isolate && (inTree(p.n.id, sel) || parts.get(sel).anc.includes(p.n.id))) || (ops.riskView && rk > 0);
-        if (!keep) op *= 0.1;
+        if (!keep) op *= 0.05;
       }
       const isSel = sel && inTree(p.n.id, sel);
       const isHov = ops.hover && inTree(p.n.id, ops.hover);
@@ -631,7 +631,11 @@ export function buildRack() {
       for (const m of p.mats) {
         const d = m.userData;
         m.opacity = op;
-        m.transparent = d.decal || op < 0.999;
+        const tr = d.decal || op < 0.999;
+        if (m.transparent !== tr) {
+          m.transparent = tr;
+          m.needsUpdate = true;
+        }
         m.depthWrite = op > 0.5;
         m.color.copy(d.color);
         m.emissive.copy(d.emissive);

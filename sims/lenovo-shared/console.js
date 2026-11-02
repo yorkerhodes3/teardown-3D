@@ -14,7 +14,7 @@ const CSS = `
 .cp{font-size:9.6px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap}
 .mu{color:${C.mute}}
 .tb{position:absolute;height:19px;padding:0 7px;display:flex;align-items:center;justify-content:center;font-size:8.8px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;border:1px solid ${C.line};background:#fff;color:${C.ink};white-space:nowrap}
-.call{position:absolute;white-space:nowrap}
+.call{position:absolute;white-space:nowrap;background:rgba(246,246,247,.88);padding:3px 6px;margin:-3px -6px;box-sizing:content-box}
 .call b{display:block;font-size:11.5px;font-weight:600;letter-spacing:.1px}
 .call span{display:block;font-size:8.6px;font-weight:500;letter-spacing:1.4px;color:${C.mute};text-transform:uppercase;margin-top:2px}
 .call.rk b{color:${C.red}}
@@ -284,7 +284,7 @@ export function createConsole(app) {
       // bill of materials: the selected row inked, risky rows red
       BOM.forEach((g, i) => {
         const r = bomRows[i];
-        const on = g.ids.some((id) => sel === id || s.inTree(sel, id) || s.inTree(id, sel));
+        const on = !!s.select && g.ids.some((id) => sel === id || s.inTree(sel, id) || s.inTree(id, sel));
         const rk = g.ids.some((id) => s.risk.byNode.has(id) || [...s.risk.byNode.keys()].some((k) => s.inTree(k, id)));
         r.style.color = on ? '#fff' : rk ? C.red : C.ink;
         r.style.background = on ? (rk ? C.red : C.ink) : rk ? C.redBg : 'transparent';

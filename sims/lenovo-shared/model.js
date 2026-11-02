@@ -193,9 +193,9 @@ let zC = zB;
   const hsW = HS ? HS.dims[0] : CP ? CP.dims[0] + 10 : 0;
   let mp = M ? M.dims[0] + 1.5 : 0;
   const slot = n ? IW / n : IW;
-  if (n && 2 * bank * mp + hsW + 16 > slot) {
+  if (n && 2 * bank * mp + hsW + 8 > slot) {
     warn(`${per} DIMMs per CPU do not fit beside the ${hsW} mm heat sink: squeezed`);
-    mp = (slot - hsW - 16) / (2 * bank);
+    mp = (slot - hsW - 8) / (2 * bank);
   }
   const len = Math.max(M ? M.dims[2] : 0, HS ? HS.dims[2] : 0, SK ? SK.dims[2] : 0);
   const zc = zB - len / 2 - 4;
@@ -210,7 +210,7 @@ let zC = zB;
     let j = 0;
     for (const s of [-1, 1])
       for (let b = 0; b < bank && j < per; b++, j++) {
-        const x = cx + s * (hsW / 2 + 8 + mp * (b + 0.5));
+        const x = cx + s * (hsW / 2 + 4 + mp * (b + 0.5));
         LAYOUT.cpu.slots.push(x);
         const id = k * per + j;
         inner(`dimm-${id}`, {kind: 'dimm', cat: TS.memory.part, pos: [x, 9, zc], moves: [{s: 5, d: [0, 0.12, 0], lag: (j / Math.max(1, per - 1)) * 0.3}], group: TS.memory.part});
@@ -221,6 +221,7 @@ let zC = zB;
 }
 
 // rear: PSUs in the corners, the NIC riser between them, the OCP card under it
+let rearW = IW;
 {
   let pw = 0;
   if (TS.psu && TS.psu.count) {
@@ -236,7 +237,7 @@ let zC = zB;
     }
   }
   const nc = TS.nics ? TS.nics.count : 0;
-  const rearW = IW - 2 * pw - 20;
+  rearW = IW - 2 * pw - 20;
   if (nc) {
     const N = cat(TS.nics.part);
     const [nt, , nl] = N.dims;

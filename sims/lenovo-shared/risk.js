@@ -169,7 +169,9 @@ export function createRiskStore(onChange, {demo = []} = {}) {
       return compiled;
     },
   };
-  window.TEARDOWN = Object.assign(window.TEARDOWN || {}, api, {nodes: () => [...NODES.keys()]});
+  window.TEARDOWN = window.TEARDOWN || {};
+  Object.defineProperties(window.TEARDOWN, Object.getOwnPropertyDescriptors(api));
+  window.TEARDOWN.nodes = () => [...NODES.keys()];
   emit();
   return api;
 }
