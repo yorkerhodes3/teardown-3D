@@ -17,7 +17,7 @@ cd "$SKILL_DIR" && npm install && npx playwright install chromium
 
 The pages need nothing else. The video needs `ffmpeg` on PATH and the score needs Python 3 (standard library only). Set `FFMPEG`, `PYTHON` or `CHROMIUM` to point at other binaries.
 
-## The 3 examples
+## The 4 examples
 
 Build one, open the HTML, press buttons. Copy the closest one when you start a new machine.
 
@@ -25,13 +25,14 @@ Build one, open the HTML, press buttons. Copy the closest one when you start a n
 |---|---|---|---|
 | `v8-*` | A cross-plane V8 with glass liners: the charge burns inside the cylinder you track, valves lift on their cams, 8 pistons move from the exact slider-crank. | Crank angle. Firing order 1-8-4-3-6-5-7-2, a chamber pressure model for the indicator diagram. | Cutaway modes (glass, section, solid), the firing order as a cylinder picker, live charts synced to the crank. |
 | `cessna-*` | The Cessna 337 main landing gear folding into the airframe on takeoff and dropping on landing. | Stroke 0..1: a 201 mm rack turns a 32-tooth pinion (module 4 mm) through exactly 180°. | One degree of freedom posing a whole mechanism, flight phases as functions of time, a runway that rolls under the model. |
+| `lenovo-*` | A 42U Lenovo AI rack of SR675 V3 GPU servers, torn down from the closed rack to every DIMM, GPU, fan and PSU. | Teardown level X 0..6 (rack, doors, slide-out, lid, modules, parts, components). Everything is generated from `bom.js`. | A BOM as the single source of truth, nested explode poses, red risk signals from external tools. |
 | `strandbeest-*` | Theo Jansen's Strandbeest, 20 legs on one crankshaft, walking broadside over sand. | Wind. The crank speed is integrated from it; every joint follows by circle intersection from Jansen's 11 link lengths. | An exact linkage solver in 67 lines, instanced tubes, foot traces, a contact chart of all 20 feet. |
 
 Each comes in 3 folders: `<name>-shared/` holds the machine, `<name>-film/` the recorded tour, `<name>-live/` the page you drive.
 
 ```
 node "$SKILL_DIR/sims/build.mjs" v8-live          # → teardown-out/dist/v8-live.html, offline, ~800 KB
-node "$SKILL_DIR/sims/build.mjs"                  # all 6
+node "$SKILL_DIR/sims/build.mjs"                  # all 8
 ```
 
 ## How a machine is built
@@ -49,6 +50,21 @@ One folder per machine, split by job. The examples follow this exactly:
 | `score.py` | The sound on the film's timeline. |
 
 For a machine outside `SKILL_DIR`, make a folder with a `main.js` and import the kit by name: `import {runSim} from 'teardown-kit/runtime.js'`. Build it with `node "$SKILL_DIR/sims/build.mjs" ./my-machine`.
+
+## BOM-driven machines and risk signals (`lenovo-*`)
+
+A teardown of a real order must not hard-code parts. In `lenovo-shared/`, `bom.js` is the only file that names a part, count, dimension or wattage. `model.js` derives layout, moves, BOM rows and power from it, and `rack.js` builds geometry per catalog `kind`.
+
+- `CATALOG`: `id → {kind, name, dims [w,h,d] mm, watts, spec}`. A new SKU of an existing kind needs no code.
+- `SERVERS`: slots (`cpu`, `memory.perCpu`, `gpu`, `drives`, `fans`, `psu`, `nics`, `ocp`, `boot`) point at catalog ids. Optional slots can be deleted, and counts can be 0. `shell: true` servers are drawn front-only.
+- `RACK.layout`: `{u, server | part, name}` from the lowest U. `target: true` picks the server that is torn down. Empty U get blanks.
+- A BOM that doesn't fit still builds, but `WARN` reports it (overlaps, squeezed GPUs or DIMMs). Read the `[bom]` lines after every swap.
+
+Red is reserved for risk. `risk.js` paints matching parts, their BOM rows and inspect cards. A part hidden inside a closed container reddens the visible container instead. Signals are `{match, level, reason, source}`:
+- `match`: node id, SKU, `kind:x`, `U22` / `U22-24`, or an array of these.
+- `level`: `low`/`medium`/`high`/`critical` or 0..1.
+
+They arrive by `DEFAULT_RISK`, `?risk=` (base64url JSON), `?riskUrl=` (polled, `riskPoll=`), `postMessage({type: 'teardown-risk', signals, replace})`, or `window.TEARDOWN.setRisk/addRisk/clearRisk`. The live page shows demo signals until one arrives; `?demo=0` hides them.
 
 ## Rules that decide whether it works
 
@@ -118,6 +134,7 @@ Checklist:
 
 ## three.js traps the examples already hit
 
+- Toggling `material.transparent` at runtime needs `material.needsUpdate = true`, otherwise the opaque shader stays compiled and fades do nothing.
 - `smoothstep(a, b, x)` with `a > b` returns 0 on Windows (ANGLE/D3D). Write `1.0 - smoothstep(b, a, x)`.
 - A `ShadowMaterial` or a decal a fraction of a millimetre above the floor loses the depth test inside a post-processing render target. Give it `polygonOffset`.
 - A quad laid into the ground with a mirrored mapping gets culled as a back face. Use `DoubleSide`.
