@@ -9,6 +9,7 @@
 // Units: mm, W, GB. dims are [width (x), height (y), length/depth (z)] as the part sits in the chassis.
 // Kinds the builders know: rack, pdu, rail, blank, switch, chassis, cover, board, pcieboard, gpu, nvlink, drive,
 // fan, fancage, cpu, socket, heatsink, dimm, duct, psu, riser, nic, ocp, boot.
+// Names are trademarks of their owners; figures are illustrative, not vendor-official. Not affiliated with any vendor.
 // Optional slots (ocp, boot, nics, drives, gpu, ...) can be deleted from a server; counts can be 0.
 // Layout checks run at load: anything that does not fit is reported with console.warn and squeezed, never hidden.
 

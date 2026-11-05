@@ -137,7 +137,7 @@ export function createConsole(app) {
   };
   group('CAMERA', CAMS, 730);
   group('OVERLAYS', OVERLAYS, 778);
-  add(`<div class="cp mu" style="position:absolute;left:1305px;top:828px;font-weight:500;font-size:8.4px;line-height:1.6;letter-spacing:1px;white-space:normal;width:250px">RED = A RISK SIGNAL FROM AN EXTERNAL TOOL.<br>CLICK A PART OR A BOM ROW TO INSPECT IT.</div>`);
+  add(`<div class="cp mu" style="position:absolute;left:1305px;top:828px;font-weight:500;font-size:8.4px;line-height:1.6;letter-spacing:1px;white-space:normal;width:250px">RED = RISK FROM AN EXTERNAL TOOL.<br>DEMO SIGNALS ARE FICTIONAL. CLICK TO INSPECT.</div>`);
 
   // ------------------------------------------------------------ stage stepper
   const ST = {x0: 480, dx: 107, y: 828};

@@ -7,11 +7,11 @@ import {BENCH, BOM, cat, DEVICES, fanFrac, LMAX, NODES, rackPower, resolve, SERV
 import {compileRisk, riskAt, riskWithin} from './risk.js';
 import {createRackStage} from './stage.js';
 
-// a fixed set of signals so the film never depends on a network; the live page takes real ones (risk.js)
+// Fictional example signals, not findings about any real product or lot. A fixed set so the film never depends on a network; the live page takes real ones (risk.js)
 export const DEMO_RISK = [
-  {match: 'gpu-2', level: 'high', reason: 'HBM ECC error rate 4× fleet baseline', source: 'Fleet telemetry'},
-  {match: 'psu-1', level: 'medium', reason: 'Capacitor lot under supplier advisory', source: 'Supply chain'},
-  {match: 'dimm-7', level: 'low', reason: 'SPD firmware one revision behind', source: 'Firmware audit'},
+  {match: 'gpu-2', level: 'high', reason: 'DEMO · example memory-error alert', source: 'Demo data'},
+  {match: 'psu-1', level: 'medium', reason: 'DEMO · example supplier advisory', source: 'Demo data'},
+  {match: 'dimm-7', level: 'low', reason: 'DEMO · example firmware check', source: 'Demo data'},
 ];
 const STEP = 2.1; // seconds a stage change takes
 export const SCRIPT = [

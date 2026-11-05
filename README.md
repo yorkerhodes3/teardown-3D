@@ -61,6 +61,8 @@ node sims/build.mjs lenovo-live      # a Lenovo AI rack, BOM-driven, with risk h
 - **Bill of materials.** Every part, count, dimension and wattage comes from `sims/lenovo-shared/bom.js`. Change it to match an order and rebuild. Layout, explode moves, BOM panel and power budget all follow. If a BOM doesn't fit (overlapping U, too many GPUs for the chassis), the build prints a `[bom]` warning.
 - **Risk signals.** Any part can be painted red by an external tool. Pass a JSON array of `{match, level, reason, source}` with `?risk=<base64url>` or `?riskUrl=<url>` (polled), with `postMessage({type: 'teardown-risk', signals})`, or with `window.TEARDOWN.setRisk([...])`. `match` is a node id (`gpu-3`), a SKU (`psu.2600-ti`), a kind (`kind:fan`) or rack units (`U22-24`). The format is documented at the top of `sims/lenovo-shared/risk.js`.
 
+> Not affiliated with or endorsed by Lenovo, NVIDIA or AMD; product names are their owners' trademarks. Dimensions, specs and wattages are illustrative, not official. The risk signals shown by default are fictional demo data, not findings about any real product, lot or supplier.
+
 ## Credits
 
 Built on [whaleyxbt/claude-motion](https://github.com/whaleyxbt/claude-motion) (MIT): the runtime, frame capture, sound engine and review rules come from there. Recorded samples are CC0 from Freesound, prepared by [Barty-Bart/motion-graphics](https://github.com/Barty-Bart/motion-graphics); sources in `sfx/samples/SOURCES.md`.
