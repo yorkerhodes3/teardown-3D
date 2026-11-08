@@ -12,6 +12,10 @@ Ask how something works. Claude builds it as one offline HTML page: the machine 
 
 A 42U Lenovo AI rack that explodes from the closed cabinet down to individual GPUs, CPUs, memory, fans, and power supplies. The BOM is swappable, and external risk signals highlight affected parts in red. [Explore the code and BOM](sims/lenovo-shared/bom.js).
 
+- **Tour:** the live demo is an interactive JavaScript/Three.js page, not a pre-recorded video. Its auto-tour is a sequence of timed actions in `sims/lenovo-shared/film.js` (`SCRIPT`): changing teardown stages, selecting parts, and showing risk. Edit those events and rebuild to change the tour. Interacting with the page takes control; the tour resumes after inactivity.
+- **Fan switch:** the `FANS` overlay switch starts or stops the rendered rotor animation. It does not simulate airflow, cooling, or an electrical on/off state; fan power in the rack budget is a separate estimate.
+- **Video:** the same scripted tour can be rendered to a video file with `sims/capture.mjs`; that exported file is a recording, unlike the live page.
+
 > Not affiliated with or endorsed by Lenovo, NVIDIA, or AMD. Product names are their owners’ trademarks; dimensions, specifications, and wattages are illustrative. Default risk signals are fictional demo data.
 
 ![Mellis HB-7 robotic bee simulator](docs/bee.gif)

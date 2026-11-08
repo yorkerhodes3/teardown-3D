@@ -30,6 +30,12 @@ Build one, open the HTML, press buttons. Copy the closest one when you start a n
 
 Each comes in 3 folders: `<name>-shared/` holds the machine, `<name>-film/` the recorded tour, `<name>-live/` the page you drive.
 
+### Lenovo tour and fan control
+
+The Lenovo live demo is a JavaScript/Three.js application, not a video player. Its idle tour uses the timestamped `SCRIPT` in `sims/lenovo-shared/film.js` to sequence teardown stages, part selections, and risk-view changes; camera and model poses are computed from the current time. To change the tour, edit those events (and `DURATION` if needed), then rebuild `lenovo-live` or `lenovo-film`. `sims/lenovo-film/timeline.json` supplies capture beat markers; it does not define the tour actions. The live page hands control to the user on interaction and returns to the tour after inactivity. `sims/capture.mjs` can render the scripted film to an actual video file.
+
+The `FANS` overlay button only starts or stops the displayed rotor animation. It does not switch a simulated fan motor, change airflow or cooling, or turn off fan power in the rack calculations; those power estimates are modeled separately.
+
 ```
 node "$SKILL_DIR/sims/build.mjs" v8-live          # → teardown-out/dist/v8-live.html, offline, ~800 KB
 node "$SKILL_DIR/sims/build.mjs"                  # all 8
