@@ -4,6 +4,16 @@ A Claude Code skill that turns any machine into a 3D simulator you can take apar
 
 Ask how something works. Claude builds it as one offline HTML page: the machine runs in the middle, every panel around it reads the real numbers, a button opens the part doing the work, and when nobody touches it the page tours itself.
 
+## Featured: Lenovo AI rack teardown
+
+**[▶ Open the live, interactive Lenovo server rack demo](https://yorkerhodes3.github.io/teardown-3D/)**
+
+[![Interactive Lenovo AI rack teardown: explore the rack, inspect parts, and follow risk signals](docs/lenovo-rack.png)](https://yorkerhodes3.github.io/teardown-3D/)
+
+A 42U Lenovo AI rack that explodes from the closed cabinet down to individual GPUs, CPUs, memory, fans, and power supplies. The BOM is swappable, and external risk signals highlight affected parts in red. [Explore the code and BOM](sims/lenovo-shared/bom.js).
+
+> Not affiliated with or endorsed by Lenovo, NVIDIA, or AMD. Product names are their owners’ trademarks; dimensions, specifications, and wattages are illustrative. Default risk signals are fictional demo data.
+
 ![Mellis HB-7 robotic bee simulator](docs/bee.gif)
 
 | Telson SC-8 robotic scorpion | Pelagos OC-8 robotic octopus |
