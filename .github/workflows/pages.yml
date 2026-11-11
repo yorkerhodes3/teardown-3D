@@ -32,7 +32,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: node --test sims/lenovo-shared/bom-format.test.mjs
+      - run: node --test sims/lenovo-shared/bom-format.test.mjs sims/lenovo-shared/presets.test.mjs
       - run: node sims/build.mjs lenovo-live
       - name: Prepare site
         run: |

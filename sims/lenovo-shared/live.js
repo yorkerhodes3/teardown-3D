@@ -6,10 +6,12 @@
 import {warmComposer} from '../kit/warm.js';
 import {CAMS, createConsole, OVERLAYS} from './console.js';
 import {DEMO_RISK, DURATION, filmState, focusView, makeConsoleFrame, makeCursor, PRESET, viewForX} from './film.js';
-import {BOM, LMAX, NODES, resolve} from './model.js';
-import {compileRisk, createRiskStore} from './risk.js';
+import {BOM, info, LMAX, NODES, resolve, STAGES} from './model.js';
+import {currentBom} from './bom.js';
+import {compileRisk, createRiskStore, levelName, riskAt, riskWithin} from './risk.js';
 import {createRackStage} from './stage.js';
 import {createDashboard} from './dashboard.js';
+import {createRowState} from './row-state.js';
 
 const W = 1600;
 const H = 900;
@@ -39,8 +41,22 @@ html,body{background:#ecedef;overflow:hidden}
 .tourchip i{display:block;width:6px;height:6px;border-radius:50%;background:#16181b}
 .tourchip.on i{animation:blink 1.2s steps(2) infinite}
 @keyframes blink{50%{opacity:.15}}
-.turn{position:fixed;left:0;right:0;bottom:18px;text-align:center;font:600 12px/1.4 'JetBrains Mono',monospace;letter-spacing:1px;color:#8b8f95;text-transform:uppercase;display:none}
-@media (orientation:portrait) and (max-width:820px){.turn{display:block}}
+.row-toggle{position:fixed;z-index:90;left:50%;top:72px;transform:translateX(-50%);padding:10px 16px;border:1px solid #999;background:#fff;border-radius:4px;cursor:pointer;font:600 13px Inter,sans-serif}
+.row-panel{position:fixed;z-index:90;left:50%;bottom:18px;transform:translateX(-50%);width:min(900px,calc(100vw - 24px));padding:12px;box-sizing:border-box;background:#fffffff2;border:1px solid #bbb;border-radius:6px;font:14px Inter,sans-serif}
+.row-panel[hidden]{display:none}
+.row-panel p{margin:0 0 8px}.row-list{display:flex;gap:8px;overflow-x:auto}.row-list button{flex:1;min-width:145px;padding:12px 8px;border:1px solid #999;background:#fff;border-radius:4px;cursor:pointer;font:inherit}.row-list button[aria-current=true]{border:2px solid #222}
+.row-error{color:#a11612}
+.mobile-controls{display:none}
+@media(max-width:820px){
+ .row-toggle{left:12px;top:10px;transform:none;padding:10px}
+ .bom-dashboard{top:10px;right:10px;width:min(390px,calc(100vw - 20px))}
+ .bom-dashboard:not([open]){width:auto}
+ .mobile-controls{display:block;position:fixed;z-index:80;bottom:0;left:0;right:0;background:#f8f8f9f5;border-top:1px solid #bbb;padding:10px 12px calc(10px + env(safe-area-inset-bottom));font:14px Inter,sans-serif}
+ .mobile-controls[hidden]{display:none}.mobile-controls label{display:block;font-weight:600}.mobile-controls input,.mobile-controls select{width:100%;margin:5px 0;box-sizing:border-box;font:inherit}
+ .mobile-controls .mobile-actions{display:flex;gap:6px}.mobile-controls button{flex:1;min-height:44px;background:white;border:1px solid #aaa;border-radius:4px;font:600 13px Inter,sans-serif}.mobile-controls select{min-height:42px}
+ .mobile-controls details{margin-top:5px}.mobile-controls details div{max-height:18vh;overflow:auto;white-space:pre-wrap;font-size:13px}
+ .row-panel{bottom:8px}.row-panel p{font-size:13px}
+}
 `;
 
 export function runLive() {
@@ -73,8 +89,10 @@ export function runLive() {
   let scale = 1;
   const fit = () => {
     const h = innerHeight - top;
-    scale = Math.min(innerWidth / W, h / H);
-    app.style.transform = `translate(${(innerWidth - W * scale) / 2}px, ${top + (h - H * scale) / 2}px) scale(${scale})`;
+    const mobile = innerWidth <= 820;
+    const visibleHeight = mobile ? Math.max(180, h - 220) : h;
+    scale = mobile ? Math.max(innerWidth / W, visibleHeight / H) : Math.min(innerWidth / W, h / H);
+    app.style.transform = `translate(${(innerWidth - W * scale) / 2}px, ${top + (mobile ? 55 : 0) + (visibleHeight - H * scale) / 2}px) scale(${scale})`;
     st.resize(W, H, clamp((devicePixelRatio || 1) * scale, 0.75, TIERS[tier].pr));
   };
   const applyTier = () => {
@@ -92,11 +110,6 @@ export function runLive() {
   const tourChip = document.createElement('div');
   tourChip.className = 'tourchip';
   ui.root.appendChild(tourChip);
-  const note = document.createElement('div');
-  note.className = 'turn';
-  note.textContent = 'Turn your phone sideways for the full console';
-  document.body.appendChild(note);
-
   // ------------------------------------------------------------ state
   let T = 0;
   let X = 0;
@@ -148,6 +161,115 @@ export function runLive() {
       risksVisible = visible;
     },
   });
+  const rowState = createRowState(currentBom());
+  let rowOpen = false;
+  const rowToggle = document.createElement('button');
+  rowToggle.type = 'button';
+  rowToggle.className = 'row-toggle';
+  rowToggle.textContent = 'View rack row';
+  rowToggle.setAttribute('aria-expanded', 'false');
+  document.body.appendChild(rowToggle);
+  const rowPanel = document.createElement('section');
+  rowPanel.className = 'row-panel';
+  rowPanel.hidden = true;
+  rowPanel.setAttribute('aria-label', 'Data center rack row');
+  const rowIntro = document.createElement('p');
+  rowIntro.textContent = 'Select a cabinet to focus and take apart. Each rack retains its own tab-local BOM.';
+  rowPanel.appendChild(rowIntro);
+  const rowList = document.createElement('div');
+  rowList.className = 'row-list';
+  rowPanel.appendChild(rowList);
+  const rowError = document.createElement('p');
+  rowError.className = 'row-error';
+  rowError.setAttribute('role', 'status');
+  rowError.textContent = rowState.loadError;
+  rowPanel.appendChild(rowError);
+  document.body.appendChild(rowPanel);
+  const mobile = document.createElement('section');
+  mobile.className = 'mobile-controls';
+  mobile.setAttribute('aria-label', 'Mobile teardown controls');
+  mobile.innerHTML = `<label>Teardown stage <span data-stage></span><input type="range" min="0" max="6" step="1" value="0" aria-label="Teardown stage"></label>
+    <div class="mobile-actions"><button type="button" data-prev>Previous</button><button type="button" data-next>Next</button><button type="button" data-fans>Fans on</button><button type="button" data-risk>Risks on</button></div>
+    <label>Inspect a component<select aria-label="Inspect a component"><option value="">Choose a component</option></select></label>
+    <details><summary>Component details</summary><div data-info>Select a component to inspect.</div></details>`;
+  document.body.appendChild(mobile);
+  const mobileStage = mobile.querySelector('input');
+  const mobileName = mobile.querySelector('[data-stage]');
+  const mobileParts = mobile.querySelector('select');
+  const mobileFans = mobile.querySelector('[data-fans]');
+  const mobileRisk = mobile.querySelector('[data-risk]');
+  const mobileInfo = mobile.querySelector('[data-info]');
+  for (const group of BOM) {
+    const option = document.createElement('option');
+    option.value = group.ids[0];
+    option.textContent = `${group.qty} × ${group.name}`;
+    mobileParts.appendChild(option);
+  }
+  const closeRow = () => {
+    rowOpen = false;
+    st.closeRow();
+    rowPanel.hidden = true;
+    mobile.hidden = false;
+    rowToggle.textContent = 'View rack row';
+    rowToggle.setAttribute('aria-expanded', 'false');
+  };
+  const selectRack = (index) => {
+    if (index === rowState.active) {
+      closeRow();
+      return;
+    }
+    if (dashboard.hasUnsavedChanges && !confirm('Discard unapplied dashboard changes and switch racks?')) return;
+    try {
+      rowState.switchTo(index, currentBom());
+      location.reload();
+    } catch (error) {
+      rowError.textContent = `Unable to switch racks: ${error.message}`;
+    }
+  };
+  rowState.racks.forEach((bom, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = `${index + 1}. ${bom.title.name}`;
+    button.setAttribute('aria-current', String(index === rowState.active));
+    button.addEventListener('click', () => selectRack(index));
+    rowList.appendChild(button);
+  });
+  rowToggle.addEventListener('click', () => {
+    takeOver();
+    if (rowOpen) return closeRow();
+    rowOpen = true;
+    st.setRow(rowState.racks);
+    rowPanel.hidden = false;
+    mobile.hidden = true;
+    rowToggle.textContent = 'Back to rack';
+    rowToggle.setAttribute('aria-expanded', 'true');
+  });
+  const stageStep = (value) => {
+    takeOver();
+    playing = false;
+    Xt = clamp(value, 0, LMAX);
+  };
+  mobileStage.addEventListener('input', () => stageStep(Number(mobileStage.value)));
+  mobile.querySelector('[data-prev]').addEventListener('click', () => stageStep(Math.ceil(Xt) - 1));
+  mobile.querySelector('[data-next]').addEventListener('click', () => stageStep(Math.floor(Xt) + 1));
+  mobileFans.addEventListener('click', () => {
+    takeOver();
+    ov.fans = ov.fans ? 0 : 1;
+    mobileFans.textContent = ov.fans ? 'Fans on' : 'Fans off';
+  });
+  mobileRisk.addEventListener('click', () => {
+    dashboard.setRiskVisibility(!risksVisible);
+    mobileRisk.textContent = risksVisible ? 'Risks on' : 'Risks off';
+  });
+  mobileParts.addEventListener('change', () => {
+    takeOver();
+    if (mobileParts.value) pickNode(mobileParts.value);
+    else setSelect(null);
+  });
+  for (const element of [mobile, rowPanel, rowToggle]) {
+    element.addEventListener('pointerdown', (event) => event.stopPropagation());
+    element.addEventListener('keydown', (event) => event.stopPropagation());
+  }
   tourChip.addEventListener('pointerdown', (e) => {
     e.stopPropagation();
     lastInput = T;
@@ -312,6 +434,13 @@ export function runLive() {
   const endDrag = (e) => {
     if (drag && drag.moved < 5 && e.type === 'pointerup') {
       const [x, y] = toStage(e.clientX, e.clientY);
+      if (rowOpen) {
+        const index = st.pickRowAt(x, y);
+        if (index !== null) selectRack(index);
+        drag = null;
+        canvas.classList.remove('drag');
+        return;
+      }
       const id = st.pickAt(x, y);
       if (id) {
         const r = resolve(id, X);
@@ -387,7 +516,7 @@ export function runLive() {
         cursor = {...cursor, x: end.x + (cursor.x - end.x) * k, y: end.y + (cursor.y - end.y) * k};
       }
     } else {
-      if (T - lastInput > IDLE && !dashboard.isOpen) startTour();
+      if (T - lastInput > IDLE && !dashboard.isOpen && !rowOpen) startTour();
       // play: one stage at a time, a short dwell at each, back to the start from the end
       if (playing) {
         if (Math.abs(X - Xt) < 1e-3) {
@@ -430,7 +559,16 @@ export function runLive() {
     riskView = riskView && risksVisible;
     st.frame(X, T, {...cam, az: cam.az * D2R, el: cam.el * D2R}, {select, hover: AP.on ? null : hover, isolate, risk: visibleRisk, riskView, spin});
 
-    ui.root.style.display = hidden ? 'none' : '';
+    ui.root.style.display = hidden || rowOpen || innerWidth <= 820 ? 'none' : '';
+    mobileStage.value = String(Math.round(X));
+    mobileName.textContent = STAGES[Math.round(X)].name;
+    mobileFans.textContent = ov.fans ? 'Fans on' : 'Fans off';
+    mobileRisk.textContent = risksVisible ? 'Risks on' : 'Risks off';
+    const inspection = select && info(select);
+    const selectedRisk = inspection && (riskAt(visibleRisk, select) || riskWithin(visibleRisk, select));
+    const details = inspection ? [inspection.name, inspection.sub, ...inspection.spec.map(([k, v]) => `${k}: ${v}`),
+      ...(selectedRisk ? [`Risk: ${levelName(selectedRisk.level)}`, ...selectedRisk.reasons] : [])].join('\n') : 'Select a component to inspect.';
+    if (mobileInfo.textContent !== details) mobileInfo.textContent = details;
     frameConsole(T, {
       X,
       select,

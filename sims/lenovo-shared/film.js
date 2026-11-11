@@ -132,7 +132,7 @@ export function makeCursor(ui) {
 // the parts the labels name, by stage; a flagged part is always named
 const CALL = [
   {ids: ['server'], from: 0, to: 2.6, sub: 'THE NODE WE TAKE APART'},
-  {ids: ['gpu-0'], from: 3.6, sub: 'GPU · PCIe GEN5'},
+  {ids: ['gpu-0'], from: 3.6, sub: 'GPU · PCIe'},
   {ids: ['fan-2'], from: 3.6, to: 5.4, sub: 'FAN WALL'},
   {ids: ['hs-0', 'cpu-0'], from: 3.6, sub: 'CPU'},
   {ids: ['psu-0'], from: 3.6, sub: 'POWER SUPPLY'},

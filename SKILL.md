@@ -74,6 +74,8 @@ They arrive by `DEFAULT_RISK`, `?risk=` (base64url JSON), `?riskUrl=` (polled, `
 
 The live page also has a collapsible **Rack dashboard**. Its risk checkbox suppresses highlights and risk UI without clearing incoming signals. BOM edits/imports are validated, staged, and applied by saving to tab-local session storage and reloading; restore runs before `model.js` is imported. The film always uses the built-in BOM. Uploads accept only `.json`, `format: "teardown-bom"`, `version: 1`, at most 256 KiB. Export provides a complete template; `bom-format.mjs` enforces supported fields, reference kinds, count/geometry bounds, and non-overlapping rack placement. See [the dashboard and vendor guide](docs/lenovo-dashboard.md) for the full format and limitations.
 
+The dashboard offers complete illustrative Lenovo, Dell, HPE and Supermicro JSON presets in `lenovo-shared/presets/`. These are not verified order configurations; their manufacturer source links and assumptions are documented in the dashboard guide. **View rack row** renders simplified adjacent cabinets and switches the detailed, tab-local BOM on selection. Narrow screens use touch-sized stage, risk, fan and component controls rather than scaling the desktop overlay down.
+
 Vendor text badges come from `TITLE.brand` / `TITLE.badgeColor`, and GPU text from catalog `vendor` / `label`; these are canvas textures, not downloaded logos. A rebrand is not a mechanical conversion: non-PCIe accelerator trays, new cooling architectures, or new part kinds need builders/layout changes and visual review.
 
 ## Rules that decide whether it works

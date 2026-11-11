@@ -1,6 +1,7 @@
 import {BOM_LOAD_ERROR, currentBom} from './bom.js';
 import {BOM_STORAGE_KEY, MAX_BOM_BYTES, parseBom, SLOT_KINDS, validateBom} from './bom-format.mjs';
 import {TARGET, WARN} from './model.js';
+import {PRESETS} from './presets.js';
 
 const CSS = `
 .bom-dashboard{position:fixed;z-index:100;right:16px;top:12px;width:390px;max-width:calc(100vw - 32px);font:13px/1.45 Inter,system-ui,sans-serif;color:#16181b;background:#f8f8f9;border:1px solid #c9ccd0;box-shadow:0 4px 20px #0002;border-radius:6px}
@@ -52,6 +53,21 @@ export function createDashboard({onRiskVisibility, onInteract}) {
   body.appendChild(riskNote);
   const form = node('form');
   body.appendChild(form);
+  const presetsLabel = node('label', 'Example rack BOM');
+  const presetsSelect = node('select');
+  const placeholder = node('option', 'Choose an illustrative preset…');
+  placeholder.value = '';
+  presetsSelect.appendChild(placeholder);
+  for (const preset of PRESETS) {
+    const option = node('option', preset.name);
+    option.value = preset.id;
+    presetsSelect.appendChild(option);
+  }
+  presetsLabel.appendChild(presetsSelect);
+  form.appendChild(presetsLabel);
+  const presetNote = node('p', 'Example BOMs use approximate geometry and generic components; verify actual compatibility and order details.');
+  presetNote.className = 'dash-note';
+  form.appendChild(presetNote);
   const editor = node('div');
   form.appendChild(editor);
   const apply = node('button', 'Apply BOM and reload');
@@ -82,11 +98,15 @@ export function createDashboard({onRiskVisibility, onInteract}) {
   body.appendChild(warnings);
   document.body.appendChild(root);
   let draft = currentBom();
+  let dirty = false;
   const report = (message, error = false) => {
     status.textContent = message;
     status.dataset.error = String(error);
   };
-  const edited = () => report('Unapplied changes. Apply to rebuild the scene, or export the draft.');
+  const edited = () => {
+    dirty = true;
+    report('Unapplied changes. Apply to rebuild the scene, or export the draft.');
+  };
   const fieldset = (title) => {
     const box = node('fieldset');
     box.appendChild(node('legend', title));
@@ -172,6 +192,23 @@ export function createDashboard({onRiskVisibility, onInteract}) {
       parts.appendChild(detail);
     }
   };
+  presetsSelect.addEventListener('change', () => {
+    const preset = PRESETS.find((item) => item.id === presetsSelect.value);
+    if (!preset) return;
+    if (!confirm('Replace the current draft with this illustrative preset? Apply to reload the rack.')) {
+      presetsSelect.value = '';
+      return;
+    }
+    try {
+      draft = validateBom(preset.bom);
+      drawEditor();
+      dirty = true;
+      report(`${preset.name} loaded into the editor. Review it, then Apply BOM and reload.`);
+    } catch (error) {
+      report(`Preset could not be loaded: ${error.message}`, true);
+    }
+    presetsSelect.value = '';
+  });
   drawEditor();
   form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -195,6 +232,7 @@ export function createDashboard({onRiskVisibility, onInteract}) {
       const imported = parseBom(await file.text());
       draft = imported;
       drawEditor();
+      dirty = true;
       report(`Loaded ${file.name} into the editor. Review it, then Apply BOM and reload.`);
     } catch (error) {
       report(`Upload rejected: ${error.message}. Your previous draft and active rack are unchanged.`, true);
@@ -241,5 +279,12 @@ export function createDashboard({onRiskVisibility, onInteract}) {
   } else {
     report(`Active target: ${TARGET.name}. Export JSON to start a new BOM.`);
   }
-  return {get isOpen() { return root.open; }};
+  return {
+    get isOpen() { return root.open; },
+    get hasUnsavedChanges() { return dirty; },
+    setRiskVisibility(visible) {
+      riskCheck.checked = visible;
+      onRiskVisibility(visible);
+    },
+  };
 }

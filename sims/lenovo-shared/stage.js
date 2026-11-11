@@ -7,6 +7,7 @@ import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import {Pass} from 'three/addons/postprocessing/Pass.js';
 import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
 import {buildRack} from './rack.js';
+import {createRackRow} from './rack-row.js';
 
 const V3 = THREE.Vector3;
 export const BG = {top: '#f3f3f4', mid: '#e9eaec', low: '#e1e2e5'};
@@ -98,6 +99,19 @@ export function createRackStage({canvas}) {
 
   const rack = buildRack();
   scene.add(rack.root);
+  let row = null;
+  const setRow = (boms) => {
+    if (!row) {
+      row = createRackRow(boms);
+      scene.add(row.root);
+    }
+    row.root.visible = true;
+    rack.root.visible = false;
+  };
+  const closeRow = () => {
+    if (row) row.root.visible = false;
+    rack.root.visible = true;
+  };
 
   const size = {w: 1600, h: 900};
   const resize = (w, h, pr) => {
@@ -113,6 +127,16 @@ export function createRackStage({canvas}) {
   // cam: target (tx, ty, tz), azimuth from +z toward +x, elevation (radians), distance (m), sx/sy screen shift (px)
   const frame = (X, t, cam, ops = {}) => {
     rack.update(X, t, ops);
+    if (row?.root.visible) {
+      sun.target.position.set(0, 1, 0);
+      sun.position.set(-2.2, 6.5, 6);
+      camera.position.set(0, innerWidth <= 820 ? 3.4 : 2.8, innerWidth <= 820 ? 14 : 9.5);
+      camera.lookAt(0, 1, 0);
+      camera.setViewOffset(size.w, size.h, 0, 0, size.w, size.h);
+      camera.updateMatrixWorld();
+      composer.render();
+      return;
+    }
     const {tx, ty, tz, az, el, d} = cam;
     // the sun and its shadow box follow what the camera looks at
     sun.target.position.set(tx, Math.min(ty, 1), tz);
@@ -130,6 +154,11 @@ export function createRackStage({canvas}) {
     return [(pv.x * 0.5 + 0.5) * size.w, (-pv.y * 0.5 + 0.5) * size.h];
   };
   const ray = new THREE.Raycaster();
+  const pickRowAt = (x, y) => {
+    if (!row?.root.visible) return null;
+    ray.setFromCamera(new THREE.Vector2((x / size.w) * 2 - 1, -(y / size.h) * 2 + 1), camera);
+    return ray.intersectObjects(row.targets, false)[0]?.object.userData.rowIndex ?? null;
+  };
   /** the node under a stage pixel, or null */
   const pickAt = (x, y) => {
     ray.setFromCamera(new THREE.Vector2((x / size.w) * 2 - 1, -(y / size.h) * 2 + 1), camera);
@@ -156,5 +185,5 @@ export function createRackStage({canvas}) {
       sun.shadow.map = null;
     }
   };
-  return {renderer, scene, camera, rack, composer, gtao, sun, resize, frame, project, pickAt, size, setQuality};
+  return {renderer, scene, camera, rack, composer, gtao, sun, resize, frame, project, pickAt, pickRowAt, setRow, closeRow, size, setQuality};
 }

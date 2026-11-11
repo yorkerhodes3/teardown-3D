@@ -1,0 +1,653 @@
+{
+  "format": "teardown-bom",
+  "version": 1,
+  "title": {
+    "name": "HPE AI Rack",
+    "sub": "ProLiant DL380a Gen11 · illustrative example",
+    "brand": "HPE",
+    "badgeColor": "#007f70"
+  },
+  "catalog": {
+    "rack.42u-1200": {
+      "kind": "rack",
+      "name": "HPE example 42U cabinet",
+      "sub": "Illustrative generic cabinet",
+      "dims": [
+        600,
+        2011,
+        1200
+      ],
+      "units": 42,
+      "plinth": 100,
+      "spec": [
+        [
+          "Height",
+          "42U"
+        ],
+        [
+          "Footprint",
+          "600 × 1200 mm"
+        ],
+        [
+          "Note",
+          "Example; verify actual rack"
+        ]
+      ]
+    },
+    "pdu.3ph-63a": {
+      "kind": "pdu",
+      "name": "0U Switched PDU",
+      "sub": "3-phase 400 V · 63 A",
+      "dims": [
+        56,
+        1760,
+        100
+      ],
+      "volts": 400,
+      "amps": 63,
+      "phases": 3,
+      "spec": [
+        [
+          "Input",
+          "3φ 400 V · 63 A"
+        ],
+        [
+          "Outlets",
+          "36 × C13 · 12 × C19"
+        ],
+        [
+          "Feed",
+          "A / B redundant"
+        ]
+      ]
+    },
+    "rail.slide": {
+      "kind": "rail",
+      "name": "Slide Rail Kit",
+      "sub": "3-stage ball-bearing",
+      "dims": [
+        12,
+        36,
+        720
+      ],
+      "travel": 620,
+      "spec": [
+        [
+          "Stages",
+          "3, ball-bearing"
+        ],
+        [
+          "Install",
+          "Tool-less"
+        ]
+      ]
+    },
+    "blank.1u": {
+      "kind": "blank",
+      "name": "1U Filler Panels",
+      "sub": "Stop hot air recirculating",
+      "dims": [
+        482.6,
+        44,
+        10
+      ],
+      "spec": [
+        [
+          "Purpose",
+          "Seal empty U slots"
+        ]
+      ]
+    },
+    "sw.leaf-400g": {
+      "kind": "switch",
+      "name": "400 GbE Leaf Switch",
+      "sub": "32 × QSFP-DD · 1U",
+      "units": 1,
+      "dims": [
+        440,
+        43.6,
+        560
+      ],
+      "watts": 700,
+      "ports": 32,
+      "portStyle": "qsfp",
+      "spec": [
+        [
+          "Ports",
+          "32 × 400 GbE QSFP-DD"
+        ],
+        [
+          "Fabric",
+          "GPU east-west traffic"
+        ]
+      ]
+    },
+    "sw.mgmt-1g": {
+      "kind": "switch",
+      "name": "1 GbE Management Switch",
+      "sub": "48 × RJ45 · 1U",
+      "units": 1,
+      "dims": [
+        440,
+        43.6,
+        300
+      ],
+      "watts": 80,
+      "ports": 48,
+      "portStyle": "rj45",
+      "spec": [
+        [
+          "Ports",
+          "48 × 1 GbE RJ45"
+        ],
+        [
+          "Carries",
+          "Management traffic"
+        ]
+      ]
+    },
+    "chassis.example": {
+      "kind": "chassis",
+      "name": "ProLiant DL380a Gen11 Chassis",
+      "sub": "Illustrative geometry",
+      "dims": [
+        445,
+        87,
+        830
+      ],
+      "spec": [
+        [
+          "Model",
+          "ProLiant DL380a Gen11"
+        ],
+        [
+          "Note",
+          "Approximate representation"
+        ]
+      ]
+    },
+    "cover.example": {
+      "kind": "cover",
+      "name": "ProLiant DL380a Gen11 Top Cover",
+      "sub": "Illustrative geometry",
+      "dims": [
+        445,
+        87,
+        830
+      ],
+      "spec": [
+        [
+          "Model",
+          "ProLiant DL380a Gen11"
+        ],
+        [
+          "Note",
+          "Approximate representation"
+        ]
+      ]
+    },
+    "board.example": {
+      "kind": "board",
+      "name": "System Board",
+      "sub": "Illustrative server board",
+      "dims": [
+        440,
+        2,
+        0
+      ],
+      "watts": 60,
+      "spec": [
+        [
+          "Platform",
+          "Intel Xeon Scalable"
+        ],
+        [
+          "Note",
+          "Verify vendor configuration"
+        ]
+      ]
+    },
+    "pcie.sw-board": {
+      "kind": "pcieboard",
+      "name": "GPU Carrier Board",
+      "sub": "Illustrative PCIe layout",
+      "dims": [
+        440,
+        6,
+        0
+      ],
+      "watts": 100,
+      "switches": 2,
+      "spec": [
+        [
+          "Purpose",
+          "Accelerator connectivity"
+        ]
+      ]
+    },
+    "cage.fan": {
+      "kind": "fancage",
+      "name": "Fan Cage",
+      "sub": "Hot-swap fan wall",
+      "dims": [
+        440,
+        100,
+        64
+      ],
+      "spec": [
+        [
+          "Holds",
+          "The front-to-back fan wall"
+        ]
+      ]
+    },
+    "duct.cpu": {
+      "kind": "duct",
+      "name": "CPU Air Baffle",
+      "sub": "Steers air over the heat sinks",
+      "dims": [
+        440,
+        14,
+        0
+      ],
+      "spec": [
+        [
+          "Material",
+          "Moulded plastic"
+        ],
+        [
+          "Job",
+          "No air bypasses the fins"
+        ]
+      ]
+    },
+    "riser.x16": {
+      "kind": "riser",
+      "name": "PCIe Riser Cage",
+      "sub": "Rear PCIe Gen5 x16 slots",
+      "dims": [
+        0,
+        84,
+        175
+      ],
+      "spec": [
+        [
+          "Slots",
+          "PCIe Gen5 x16, HHHL"
+        ]
+      ]
+    },
+    "cpu.example": {
+      "kind": "cpu",
+      "name": "Intel Xeon Scalable",
+      "sub": "Example processor family",
+      "dims": [
+        72,
+        6,
+        75.4
+      ],
+      "watts": 360,
+      "label": "Intel Xeon Scalable",
+      "spec": [
+        [
+          "Family",
+          "Intel Xeon Scalable"
+        ],
+        [
+          "Note",
+          "Select actual CPU and TDP"
+        ]
+      ]
+    },
+    "socket.example": {
+      "kind": "socket",
+      "name": "CPU Socket",
+      "sub": "Illustrative socket",
+      "dims": [
+        86,
+        7,
+        96
+      ],
+      "spec": [
+        [
+          "Note",
+          "Verify socket and platform"
+        ]
+      ]
+    },
+    "hs.cpu-sp5": {
+      "kind": "heatsink",
+      "name": "CPU Heat Sink",
+      "sub": "Illustrative air cooling",
+      "dims": [
+        100,
+        86,
+        115
+      ],
+      "fins": 36,
+      "pipes": 4,
+      "spec": [
+        [
+          "Note",
+          "Verify cooling option"
+        ]
+      ]
+    },
+    "mem.ddr5-64g": {
+      "kind": "dimm",
+      "name": "64 GB DDR5-4800 RDIMM",
+      "sub": "Registered ECC",
+      "dims": [
+        7.5,
+        31.25,
+        133.35
+      ],
+      "watts": 10,
+      "gb": 64,
+      "spec": [
+        [
+          "Capacity",
+          "64 GB"
+        ],
+        [
+          "Speed",
+          "4800 MT/s"
+        ],
+        [
+          "Type",
+          "RDIMM, ECC"
+        ]
+      ]
+    },
+    "gpu.example": {
+      "kind": "gpu",
+      "name": "Example PCIe Accelerator",
+      "sub": "Illustrative double-width GPU",
+      "dims": [
+        40,
+        111.15,
+        267.7
+      ],
+      "watts": 400,
+      "idle": 60,
+      "gb": 94,
+      "label": "PCIe GPU",
+      "vendor": "",
+      "fp8": 0,
+      "spec": [
+        [
+          "Form",
+          "Double-width PCIe"
+        ],
+        [
+          "Note",
+          "Select a supported GPU"
+        ]
+      ]
+    },
+    "ssd.e1s-7t68": {
+      "kind": "drive",
+      "name": "E1.S NVMe SSD",
+      "sub": "7.68 TB · hot-swap",
+      "dims": [
+        15,
+        31.5,
+        118.75
+      ],
+      "watts": 20,
+      "tb": 7.68,
+      "spec": [
+        [
+          "Capacity",
+          "7.68 TB"
+        ],
+        [
+          "Form",
+          "E1.S 15 mm"
+        ],
+        [
+          "Interface",
+          "NVMe PCIe x4"
+        ]
+      ]
+    },
+    "ssd.u2-3t84": {
+      "kind": "drive",
+      "name": "2.5-inch NVMe SSD",
+      "sub": "3.84 TB · hot-swap",
+      "dims": [
+        15,
+        70,
+        100
+      ],
+      "watts": 14,
+      "tb": 3.84,
+      "spec": [
+        [
+          "Capacity",
+          "3.84 TB"
+        ]
+      ]
+    },
+    "nic.example": {
+      "kind": "nic",
+      "name": "Example PCIe Network Adapter",
+      "sub": "Illustrative network card",
+      "dims": [
+        18,
+        68.9,
+        167.65
+      ],
+      "watts": 25,
+      "gbps": 400,
+      "spec": [
+        [
+          "Note",
+          "Select a supported adapter"
+        ]
+      ]
+    },
+    "nic.ocp-2x25": {
+      "kind": "ocp",
+      "name": "Example OCP Network Adapter",
+      "sub": "Illustrative OCP card",
+      "dims": [
+        76,
+        12,
+        115
+      ],
+      "watts": 15,
+      "spec": [
+        [
+          "Note",
+          "Verify compatibility"
+        ]
+      ]
+    },
+    "m2.boot-2x960": {
+      "kind": "boot",
+      "name": "M.2 Boot Adapter",
+      "sub": "2 × 960 GB · RAID 1",
+      "dims": [
+        42,
+        8,
+        110
+      ],
+      "watts": 16,
+      "spec": [
+        [
+          "Drives",
+          "2 × 960 GB M.2 NVMe"
+        ],
+        [
+          "RAID",
+          "1, mirrored OS"
+        ]
+      ]
+    },
+    "psu.example": {
+      "kind": "psu",
+      "name": "2200 W PSU",
+      "sub": "Illustrative hot-swap PSU",
+      "dims": [
+        73.5,
+        40,
+        185
+      ],
+      "output": 2200,
+      "efficiency": 0.96,
+      "spec": [
+        [
+          "Output",
+          "2200 W"
+        ],
+        [
+          "Note",
+          "Verify option and redundancy"
+        ]
+      ]
+    },
+    "fan.example": {
+      "kind": "fan",
+      "name": "Hot-swap Fan",
+      "sub": "Illustrative fan module",
+      "dims": [
+        72.83333333333333,
+        70,
+        56
+      ],
+      "watts": 45,
+      "rpm": 13000,
+      "spec": [
+        [
+          "Note",
+          "Approximate representation"
+        ]
+      ]
+    }
+  },
+  "servers": {
+    "server.example": {
+      "name": "ProLiant DL380a Gen11",
+      "sub": "2U · example GPU node",
+      "units": 2,
+      "dims": [
+        445,
+        87,
+        830
+      ],
+      "chassis": "chassis.example",
+      "cover": "cover.example",
+      "board": "board.example",
+      "gpuBoard": "pcie.sw-board",
+      "duct": "duct.cpu",
+      "fanCage": "cage.fan",
+      "cpu": {
+        "part": "cpu.example",
+        "count": 2,
+        "socket": "socket.example",
+        "heatsink": "hs.cpu-sp5"
+      },
+      "memory": {
+        "part": "mem.ddr5-64g",
+        "perCpu": 8
+      },
+      "gpu": {
+        "part": "gpu.example",
+        "count": 4
+      },
+      "drives": {
+        "part": "ssd.e1s-7t68",
+        "count": 4
+      },
+      "fans": {
+        "part": "fan.example",
+        "count": 6
+      },
+      "psu": {
+        "part": "psu.example",
+        "count": 2,
+        "redundancy": "N+N"
+      },
+      "nics": {
+        "part": "nic.example",
+        "count": 4,
+        "riser": "riser.x16"
+      },
+      "ocp": {
+        "part": "nic.ocp-2x25"
+      },
+      "boot": {
+        "part": "m2.boot-2x960"
+      }
+    },
+    "storage.example": {
+      "name": "Example storage node",
+      "sub": "Illustrative 2U storage node",
+      "units": 2,
+      "dims": [
+        445,
+        86.5,
+        764
+      ],
+      "shell": true,
+      "watts": 900,
+      "drives": {
+        "part": "ssd.u2-3t84",
+        "count": 24
+      }
+    }
+  },
+  "rack": {
+    "part": "rack.42u-1200",
+    "pdu": {
+      "part": "pdu.3ph-63a",
+      "count": 2
+    },
+    "rail": "rail.slide",
+    "blank": "blank.1u",
+    "layout": [
+      {
+        "u": 42,
+        "part": "sw.leaf-400g",
+        "name": "Leaf A"
+      },
+      {
+        "u": 41,
+        "part": "sw.leaf-400g",
+        "name": "Leaf B"
+      },
+      {
+        "u": 40,
+        "part": "sw.mgmt-1g",
+        "name": "Management"
+      },
+      {
+        "u": 34,
+        "server": "server.example",
+        "name": "GPU node 1",
+        "target": true
+      },
+      {
+        "u": 29,
+        "server": "server.example",
+        "name": "GPU node 2"
+      },
+      {
+        "u": 24,
+        "server": "server.example",
+        "name": "GPU node 3"
+      },
+      {
+        "u": 19,
+        "server": "server.example",
+        "name": "GPU node 4"
+      },
+      {
+        "u": 13,
+        "server": "storage.example",
+        "name": "Example storage"
+      }
+    ]
+  }
+}

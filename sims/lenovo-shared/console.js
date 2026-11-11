@@ -257,7 +257,8 @@ export function createConsole(app) {
         pwSpark.innerHTML = `<path d="${sp}" fill="none" stroke="${C.ink}" stroke-width="1.2"/><text x="110" y="8" font-size="6.4" text-anchor="end" fill="${C.mute}" letter-spacing=".8">GPU UTIL ${Math.round(s.util * 100)} %</text>`;
         pwPsu.innerHTML = `PSU <b style="color:${C.ink}">${(p.usable / 1000).toFixed(1)} kW</b> usable &nbsp;·&nbsp; load <b style="color:${C.ink}">${Math.round((p.wall / p.usable) * 100)} %</b>`;
         pwRack.innerHTML = `Rack <b style="color:${C.ink}">${(s.rackW / 1000).toFixed(1)} kW</b> &nbsp;·&nbsp; PDU <b style="color:${C.ink}">${PDU_KW.toFixed(1)} kW</b> / feed`;
-        pwGpu.innerHTML = `Fans <b style="color:${C.ink}">${Math.round(s.fanRpm).toLocaleString('en-US')}</b> rpm &nbsp;·&nbsp; FP8 <b style="color:${C.ink}">${((TOTALS.gpus * (TARGET.srv.gpu ? cat(TARGET.srv.gpu.part).fp8 || 0 : 0)) / 1000).toFixed(0)}</b> PFLOPS / rack`;
+        const fp8 = TARGET.srv.gpu ? cat(TARGET.srv.gpu.part).fp8 : 0;
+        pwGpu.innerHTML = `Fans <b style="color:${C.ink}">${Math.round(s.fanRpm).toLocaleString('en-US')}</b> rpm &nbsp;·&nbsp; FP8 <b style="color:${C.ink}">${fp8 ? ((TOTALS.gpus * fp8) / 1000).toFixed(0) : '—'}</b> PFLOPS / rack`;
       }
 
       // inspect card

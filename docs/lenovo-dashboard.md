@@ -6,6 +6,7 @@ The [live demonstration](https://yorkerhodes3.github.io/teardown-3D/) is a JavaS
 
 Open **Rack dashboard** in the top-right corner. Click the heading again to collapse it. The panel scrolls on smaller displays, and the auto-tour stays paused while it is open.
 
+- **Example rack BOM:** select a researched example and confirm to replace the current draft. Review and apply it just like an uploaded BOM. Export the result as a starting template for a proprietary order; the examples are illustrative, not verified or order-ready.
 - **Show risk signals and red highlights:** hides or restores risk colors, callouts, inspect-card warnings, and the risk list together. Signals are retained and external tools can keep updating them while hidden. This is separate from the existing **RISK** overlay, which fades non-risky parts to focus on flagged ones.
 - **Branding:** change the display title, subtitle, cabinet name, rack/server badge text, and badge background color. Server names/descriptions and GPU vendor text/part labels are also editable. Update all relevant names when rebranding; changing a badge does not rename existing catalog SKUs.
 - **Teardown server:** choose a catalog SKU for each existing slot and change quantities (memory quantity is per CPU). Expand a slot's SKU details to edit its name, printed label, or maximum watts. Changes to a server configuration affect all rack nodes using it; changes to a SKU affect every occurrence of that SKU.
@@ -15,6 +16,27 @@ Open **Rack dashboard** in the top-right corner. Click the heading again to coll
 - **Reset to published BOM:** asks for confirmation, discards tab-local changes, and reloads the published default.
 
 Edits are local to the browser tab and survive reloads in that tab. They do not modify repository files, publish a configuration, or affect other viewers. If browser storage is unavailable, the dashboard reports the error rather than claiming the change was saved. Invalid saved data opens the dashboard with a recovery message and the published default.
+
+## Rack row and small screens
+
+Select **View rack row** to see four side-by-side 3D cabinets. Click a cabinet or its named button to focus it; select stages or components to explode the focused rack. The row cabinets are simplified previews, while only the selected rack is rendered as the detailed teardown. Each cabinet has a separate tab-local BOM; switching racks reloads the detailed scene and restores that rack's last applied BOM. A newly applied import or preset belongs to the currently focused rack. Unsaved editor drafts are not carried between racks; switching prompts before discarding them. Risk signals are evaluated for the focused rack only; API-injected, in-memory signals need to be sent again after switching/reloading. URL-based risk feeds reconnect.
+
+On narrow screens the desktop panels are replaced with a touch-friendly stage slider, previous/next buttons, fan and risk toggles, a component picker, and expandable inspection details. The dashboard and row selector remain available. On larger displays the desktop console and camera/inspection controls are retained.
+
+## Illustrative rack presets
+
+The dashboard includes four complete `teardown-bom` v1 JSON files in [`sims/lenovo-shared/presets/`](../sims/lenovo-shared/presets/). Each contains a 42U example cabinet, two leaf switches, management switch, four GPU servers, one illustrative storage server, PDUs, rails, and a detailed target server with CPUs, memory, GPUs, drives, fans, PSUs and network cards. The server form factor and broad capabilities are based on the manufacturer references below; actual components, rack layout, PSU selection, rack dimensions, per-part sizes, power, and geometry are examples. CPU/GPU names in these examples denote families or generic placeholders unless an individual SKU is cited, and do not establish an approved configuration. Confirm every combination, power budget, and mechanical fit with the vendor before ordering.
+
+| Preset | Source-supported platform | Manufacturer source |
+|---|---|---|
+| Lenovo ThinkSystem SR675 V3 | 3U, dual AMD EPYC 9004/9005, up to 24 DIMMs and PCIe GPUs | [Lenovo technical specifications](https://pubs.lenovo.com/sr675-v3/server_specifications_technical) |
+| Dell PowerEdge R760xa | 2U, dual Intel Xeon Scalable, up to four double-width PCIe accelerators | [Dell R760xa specification sheet](https://www.delltechnologies.com/assetlink/doc/no-no/poweredge-r760xa-spec-sheet-en-dl1lrbv-original.pdf) |
+| HPE ProLiant DL380a Gen11 | 2U, dual Intel Xeon Scalable, up to four double-width accelerators, six fans | [HPE DL380a Gen11 QuickSpecs](https://www.hpe.com/us/en/collaterals/collateral.a50004309enw.html) |
+| Supermicro AS-4125GS-TNRT | 4U, dual AMD EPYC 9004/9005, up to eight double-width PCIe GPUs | [Supermicro product datasheet](https://www.supermicro.com/en/products/system/datasheet/as-4125gs-tnrt) |
+
+The presets deliberately use generic component entries where an exact compatible order is not established, and the display uses the shared approximate PCIe-server model. The Supermicro example includes NVIDIA L40S accelerators, listed as supported by Supermicro; its 48 GB and 350 W ratings come from [NVIDIA's L40S specifications](https://www.nvidia.com/en-us/data-center/l40s/). Source limits do not prove that the illustrative combination of components is supported. Import a verified order BOM to replace these placeholders. The JSON files are regenerated from `presets/generate.mjs`; see the exported JSON and validation rules below for proprietary data conversion.
+
+For the example PSU ratings, see [Dell's 2800 W PSU compatibility listing](https://www.dell.com/en-ie/shop/dell-single-hot-plug-power-supply-2800-watt-mm-hlac-200-240vac-titanium-by-liteon/apd/450-algt/computer-chassis-components) and [HPE's DL380a power-supply specifications](https://cdn.support.hpe.com/hpesc/public/docDisplay?docId=sd00002528en_us&page=GUID-3470BCE5-8F3D-4742-B1E0-15EDEB1AD7A4.html&docLocale=en_US). Ratings depend on input voltage and configuration; they are not proof that the example loads are supported.
 
 The **FANS** overlay still controls visual rotor animation only, not a physical motor, thermal simulation, or the separately calculated fan power.
 
@@ -70,8 +92,10 @@ The current geometry depicts a rack-mounted PCIe GPU server. Renaming it does no
 
 ```sh
 node --test sims/lenovo-shared/bom-format.test.mjs
+node --test sims/lenovo-shared/presets.test.mjs
 node sims/build.mjs lenovo-live lenovo-film
 CHROMIUM=/path/to/chrome node --test sims/lenovo-shared/dashboard.browser.test.mjs
+CHROMIUM=/path/to/chrome node --test sims/lenovo-shared/row.browser.test.mjs
 ```
 
 Omit `CHROMIUM` to use Playwright's installed browser. The browser test requires the live HTML to have been built first.

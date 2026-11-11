@@ -401,7 +401,7 @@ export function info(id) {
     return {
       name: s.name,
       sub: `${n.name} · ${s.sub}`,
-      spec: [['GPUs', gpuLine], ['CPUs', s.cpu ? `${s.cpu.count} × ${cat(s.cpu.part).name}` : '—'], ['Memory', `${TOTALS.memTB.toFixed(1)} TB DDR5 + ${fmt(TOTALS.hbmGB)} GB HBM`], ['Power', `${fmt(Math.round(serverMax()))} W max`]],
+      spec: [['GPUs', gpuLine], ['CPUs', s.cpu ? `${s.cpu.count} × ${cat(s.cpu.part).name}` : '—'], ['Memory', `${TOTALS.memTB.toFixed(1)} TB DDR5 + ${fmt(TOTALS.hbmGB)} GB GPU memory`], ['Power', `${fmt(Math.round(serverMax()))} W max`]],
       qty: TOTALS.nodes,
     };
   }
