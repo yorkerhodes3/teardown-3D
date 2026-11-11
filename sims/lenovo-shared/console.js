@@ -49,7 +49,7 @@ export function createConsole(app) {
   // ------------------------------------------------------------ title, the teardown level
   add(`<div style="position:absolute;left:35px;top:33px;width:43px;height:3px;background:${C.ink}"></div>`);
   add(`<div style="position:absolute;left:35px;top:45px;font-size:24px;font-weight:700;letter-spacing:-.2px">${esc(TITLE.name)} <span style="color:${C.mute};font-weight:500">· Teardown</span></div>`);
-  add(`<div class="cp" style="position:absolute;left:35px;top:79px;font-weight:500;letter-spacing:1.5px;font-size:9px">${esc(TARGET.srv.name)} &nbsp;•&nbsp; ${TOTALS.nodes} NODES &nbsp;•&nbsp; ${TOTALS.gpus} × ${esc(TOTALS.gpuName)}</div>`);
+  add(`<div class="cp" style="position:absolute;left:35px;top:79px;font-weight:500;letter-spacing:1.5px;font-size:9px">${esc(TITLE.sub)} &nbsp;•&nbsp; ${TOTALS.nodes} NODES &nbsp;•&nbsp; ${TOTALS.gpus} × ${esc(TOTALS.gpuName)}</div>`);
   const lvBig = add(`<div style="position:absolute;left:33px;top:100px;font-size:56px;font-weight:800;letter-spacing:-3px;line-height:1"></div>`);
   add(`<div style="position:absolute;left:112px;top:132px;font-size:12px;font-weight:500;color:${C.mute}">/ ${pad2(LMAX)}</div>`);
   const lvName = add(`<div style="position:absolute;left:150px;top:104px;font-size:20px;font-weight:700"></div>`);
@@ -257,7 +257,7 @@ export function createConsole(app) {
         pwSpark.innerHTML = `<path d="${sp}" fill="none" stroke="${C.ink}" stroke-width="1.2"/><text x="110" y="8" font-size="6.4" text-anchor="end" fill="${C.mute}" letter-spacing=".8">GPU UTIL ${Math.round(s.util * 100)} %</text>`;
         pwPsu.innerHTML = `PSU <b style="color:${C.ink}">${(p.usable / 1000).toFixed(1)} kW</b> usable &nbsp;·&nbsp; load <b style="color:${C.ink}">${Math.round((p.wall / p.usable) * 100)} %</b>`;
         pwRack.innerHTML = `Rack <b style="color:${C.ink}">${(s.rackW / 1000).toFixed(1)} kW</b> &nbsp;·&nbsp; PDU <b style="color:${C.ink}">${PDU_KW.toFixed(1)} kW</b> / feed`;
-        pwGpu.innerHTML = `Fans <b style="color:${C.ink}">${Math.round(s.fanRpm).toLocaleString('en-US')}</b> rpm &nbsp;·&nbsp; FP8 <b style="color:${C.ink}">${((TOTALS.gpus * (cat(TARGET.srv.gpu.part).fp8 || 0)) / 1000).toFixed(0)}</b> PFLOPS / rack`;
+        pwGpu.innerHTML = `Fans <b style="color:${C.ink}">${Math.round(s.fanRpm).toLocaleString('en-US')}</b> rpm &nbsp;·&nbsp; FP8 <b style="color:${C.ink}">${((TOTALS.gpus * (TARGET.srv.gpu ? cat(TARGET.srv.gpu.part).fp8 || 0 : 0)) / 1000).toFixed(0)}</b> PFLOPS / rack`;
       }
 
       // inspect card

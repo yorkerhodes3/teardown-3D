@@ -3,7 +3,7 @@
 // blinks the LEDs, and paints risk (red, the page's one accent), selection and isolation into each part's materials.
 import * as THREE from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
-import {cat, FREE_U, LAYOUT, NODES, pose, RACKDIM, resolve, TARGET, U} from './model.js';
+import {cat, FREE_U, LAYOUT, NODES, pose, RACKDIM, resolve, TARGET, TITLE, U} from './model.js';
 
 const RED = new THREE.Color('#e0201b');
 const V3 = THREE.Vector3;
@@ -92,13 +92,13 @@ const decal = (key, make) => {
   }
   return matCache.get(key);
 };
-const lenovoBadge = () =>
-  textTex(256, 80, '#e0201b', (g, w, h) => {
+const vendorBadge = () =>
+  textTex(256, 80, TITLE.badgeColor, (g, w, h) => {
     g.fillStyle = '#fff';
     g.font = '700 50px Inter, Arial, sans-serif';
     g.textAlign = 'center';
     g.textBaseline = 'middle';
-    g.fillText('Lenovo', w / 2, h / 2 + 2);
+    g.fillText(TITLE.brand, w / 2, h / 2 + 2, w - 12);
   });
 
 // ------------------------------------------------------------ the builder: boxes and cylinders in mm, merged per material
@@ -175,7 +175,7 @@ const BUILD = {
     // the handle on the side away from the hinge
     const hx = s > 0 ? x0 + W - 15 : x0 + 15;
     b.box('steelDark', 14, 220, 14, hx, P + hh * 0.55, z + s * 16);
-    if (s > 0) b.plane(texMat('badge', lenovoBadge, {roughness: 0.5}), 150, 47, cx, P + hh - 70, z + 2.6);
+    if (s > 0) b.plane(texMat('badge', vendorBadge, {roughness: 0.5}), 150, 47, cx, P + hh - 70, z + 2.6);
   },
   side(b, n) {
     const {h: H, d: D, plinth: P} = R;
@@ -283,14 +283,14 @@ const BUILD = {
     b.cyl('steel', 4, 3, -(W / 2 + 8.65), H * 0.86, zf + 4.5, 'z', 16);
     b.box('led', 3, 3, 1.5, -(W / 2 + 8.65), H * 0.78, zf + 4.5);
     b.box('ledBlue', 3, 3, 1.5, -(W / 2 + 8.65), H * 0.72, zf + 4.5);
-    b.plane(texMat('badgeV', () => textTex(80, 256, '#e0201b', (g) => {
+    b.plane(texMat('badgeV', () => textTex(80, 256, TITLE.badgeColor, (g) => {
       g.translate(40, 128);
       g.rotate(-Math.PI / 2);
       g.fillStyle = '#fff';
       g.font = '700 46px Inter, Arial';
       g.textAlign = 'center';
       g.textBaseline = 'middle';
-      g.fillText('Lenovo', 0, 2);
+      g.fillText(TITLE.brand, 0, 2, 240);
     })), 12, 38, W / 2 + 8.65, H * 0.8, zf + 4.2);
     const drives = [...NODES.values()].filter((d) => d.kind === 'drive');
     const perf = texMat('grille', () => hexPerf('#2a2c30', '#060607', [1, 1]), {metalness: 0.35});
@@ -388,7 +388,7 @@ const BUILD = {
     b.plane(decal(`gpuLabel:${n.cat}`, () => textTex(512, 128, null, (g) => {
       g.fillStyle = '#1b1c1e';
       g.font = '800 54px Inter, Arial';
-      g.fillText('NVIDIA', 18, 62);
+      g.fillText(c.vendor || '', 18, 62, 480);
       g.font = '600 40px Inter, Arial';
       g.fillText(c.label || c.name, 18, 112);
     })), 120, 30, t / 2 + 0.05, h * 0.62, -l * 0.18, 0, Math.PI / 2);

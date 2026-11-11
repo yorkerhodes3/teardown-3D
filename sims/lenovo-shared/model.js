@@ -412,7 +412,7 @@ export function info(id) {
   if (n.kind === 'blank') return {name: c.name, sub: c.sub, spec: [['Fills', `${n.units.length} empty U`], ...c.spec], qty: n.units.length};
   if (n.kind === 'rail') return {name: c.name, sub: c.sub, spec: [['Travel', `${fmt(TRAVEL)} mm out`], ...c.spec], qty: 1};
   if (n.kind === 'pdu') return {name: c.name, sub: `Feed ${n.feed} · ${c.sub}`, spec: [...c.spec, ['Capacity', `${PDU_KW.toFixed(1)} kW per feed`]], qty: RACK.pdu.count};
-  const sub = {'gpu-shroud': 'Shroud', 'gpu-sink': 'Heat sink', 'gpu-board': 'Board · GH100 die · HBM3', 'fan-rotor': 'Rotor'}[n.kind];
+  const sub = {'gpu-shroud': 'Shroud', 'gpu-sink': 'Heat sink', 'gpu-board': 'Board · accelerator die · memory', 'fan-rotor': 'Rotor'}[n.kind];
   const b = BOM.find((g) => g.key === n.group);
   const dims = c.dims[0] && c.dims[2] ? [['Size', `${c.dims.map((v) => +v.toFixed(1)).join(' × ')} mm`]] : [];
   const watts = c.watts ? [['Power', `${fmt(c.watts)} W max each`]] : [];

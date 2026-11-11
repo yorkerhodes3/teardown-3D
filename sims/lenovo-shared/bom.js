@@ -12,6 +12,7 @@
 // Names are trademarks of their owners; figures are illustrative, not vendor-official. Not affiliated with any vendor.
 // Optional slots (ocp, boot, nics, drives, gpu, ...) can be deleted from a server; counts can be 0.
 // Layout checks run at load: anything that does not fit is reported with console.warn and squeezed, never hidden.
+import {BOM_STORAGE_KEY, parseBom} from './bom-format.mjs';
 
 export const CATALOG = {
   // ------------------------------------------------------------ cabinet
@@ -73,7 +74,7 @@ export const CATALOG = {
   // ------------------------------------------------------------ accelerators
   'gpu.h100-nvl': {
     kind: 'gpu', name: 'NVIDIA H100 NVL', sub: '94 GB HBM3 · PCIe Gen5', dims: [40, 111.15, 267.7], watts: 400, idle: 60, gb: 94,
-    label: 'H100 NVL', fp8: 3341,
+    label: 'H100 NVL', vendor: 'NVIDIA', fp8: 3341,
     spec: [['Memory', '94 GB HBM3 · 3.9 TB/s'], ['FP8', '3,341 TFLOPS sparse'], ['Power', '400 W max'], ['Form', 'FHFL double-width']],
   },
   'nvl.bridge-h100': {
@@ -145,4 +146,24 @@ export const RACK = {
   ],
 };
 
-export const TITLE = {name: 'Lenovo AI Rack', sub: 'ThinkSystem SR675 V3 GPU cluster'};
+export const TITLE = {name: 'Lenovo AI Rack', sub: 'ThinkSystem SR675 V3 GPU cluster', brand: 'Lenovo', badgeColor: '#e0201b'};
+
+export const DEFAULT_BOM = structuredClone({format: 'teardown-bom', version: 1, title: TITLE, catalog: CATALOG, servers: SERVERS, rack: RACK});
+export let BOM_LOAD_ERROR = '';
+export const currentBom = () => structuredClone({format: 'teardown-bom', version: 1, title: TITLE, catalog: CATALOG, servers: SERVERS, rack: RACK});
+
+// Called only by the live entry point, before model.js computes any derived layout.
+export function restoreBom() {
+  try {
+    const saved = sessionStorage.getItem(BOM_STORAGE_KEY);
+    if (!saved) return;
+    const bom = parseBom(saved);
+    for (const [target, source] of [[TITLE, bom.title], [CATALOG, bom.catalog], [SERVERS, bom.servers], [RACK, bom.rack]]) {
+      for (const key of Object.keys(target)) delete target[key];
+      Object.assign(target, source);
+    }
+  } catch (error) {
+    BOM_LOAD_ERROR = `Saved BOM could not be loaded: ${error.message}. The default rack is displayed. Use Reset to clear the saved BOM.`;
+    console.warn('[bom]', BOM_LOAD_ERROR);
+  }
+}

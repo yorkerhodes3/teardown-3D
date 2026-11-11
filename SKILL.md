@@ -72,6 +72,10 @@ Red is reserved for risk. `risk.js` paints matching parts, their BOM rows and in
 
 They arrive by `DEFAULT_RISK`, `?risk=` (base64url JSON), `?riskUrl=` (polled, `riskPoll=`), `postMessage({type: 'teardown-risk', signals, replace})`, or `window.TEARDOWN.setRisk/addRisk/clearRisk`. The live page shows demo signals until one arrives; `?demo=0` hides them.
 
+The live page also has a collapsible **Rack dashboard**. Its risk checkbox suppresses highlights and risk UI without clearing incoming signals. BOM edits/imports are validated, staged, and applied by saving to tab-local session storage and reloading; restore runs before `model.js` is imported. The film always uses the built-in BOM. Uploads accept only `.json`, `format: "teardown-bom"`, `version: 1`, at most 256 KiB. Export provides a complete template; `bom-format.mjs` enforces supported fields, reference kinds, count/geometry bounds, and non-overlapping rack placement. See [the dashboard and vendor guide](docs/lenovo-dashboard.md) for the full format and limitations.
+
+Vendor text badges come from `TITLE.brand` / `TITLE.badgeColor`, and GPU text from catalog `vendor` / `label`; these are canvas textures, not downloaded logos. A rebrand is not a mechanical conversion: non-PCIe accelerator trays, new cooling architectures, or new part kinds need builders/layout changes and visual review.
+
 ## Rules that decide whether it works
 
 1. **Start from a reference, never from imagination.** A photo, a cutaway drawing from a manual, a clip of the real thing. Build against it and compare frame by frame. Machines invented from a sentence come out generic every time; the same model rebuilds a real one closely when it has something to match.

@@ -7,8 +7,9 @@ import {warmComposer} from '../kit/warm.js';
 import {CAMS, createConsole, OVERLAYS} from './console.js';
 import {DEMO_RISK, DURATION, filmState, focusView, makeConsoleFrame, makeCursor, PRESET, viewForX} from './film.js';
 import {BOM, LMAX, NODES, resolve} from './model.js';
-import {createRiskStore} from './risk.js';
+import {compileRisk, createRiskStore} from './risk.js';
 import {createRackStage} from './stage.js';
+import {createDashboard} from './dashboard.js';
 
 const W = 1600;
 const H = 900;
@@ -58,6 +59,8 @@ export function runLive() {
   const q = new URLSearchParams(location.search);
   let risk = null;
   const store = createRiskStore((c) => (risk = c), {demo: q.get('demo') === '0' ? [] : DEMO_RISK});
+  const noRisk = compileRisk([]);
+  let risksVisible = true;
 
   // ------------------------------------------------------------ quality tiers
   const TIERS = [
@@ -138,6 +141,13 @@ export function runLive() {
     ov.risk = s.riskView ? 1 : 0;
     ov.isolate = s.select ? 1 : 0;
   };
+  const dashboard = createDashboard({
+    onInteract: takeOver,
+    onRiskVisibility: (visible) => {
+      takeOver();
+      risksVisible = visible;
+    },
+  });
   tourChip.addEventListener('pointerdown', (e) => {
     e.stopPropagation();
     lastInput = T;
@@ -377,7 +387,7 @@ export function runLive() {
         cursor = {...cursor, x: end.x + (cursor.x - end.x) * k, y: end.y + (cursor.y - end.y) * k};
       }
     } else {
-      if (T - lastInput > IDLE) startTour();
+      if (T - lastInput > IDLE && !dashboard.isOpen) startTour();
       // play: one stage at a time, a short dwell at each, back to the start from the end
       if (playing) {
         if (Math.abs(X - Xt) < 1e-3) {
@@ -416,13 +426,15 @@ export function runLive() {
     const k = 1 - Math.exp(-dt / (AP.on ? 0.12 : 0.3));
     cam.az += wrap(tgt.az - cam.az) * k;
     for (const key of ['tx', 'ty', 'tz', 'el', 'd', 'sx', 'sy']) cam[key] += (tgt[key] - cam[key]) * k;
-    st.frame(X, T, {...cam, az: cam.az * D2R, el: cam.el * D2R}, {select, hover: AP.on ? null : hover, isolate, risk, riskView, spin});
+    const visibleRisk = risksVisible ? risk : noRisk;
+    riskView = riskView && risksVisible;
+    st.frame(X, T, {...cam, az: cam.az * D2R, el: cam.el * D2R}, {select, hover: AP.on ? null : hover, isolate, risk: visibleRisk, riskView, spin});
 
     ui.root.style.display = hidden ? 'none' : '';
     frameConsole(T, {
       X,
       select,
-      risk,
+      risk: visibleRisk,
       riskView,
       cursor,
       live: {playing, dir, speedK: speedI / (SPEEDS.length - 1), speedText: `${SPEEDS[speedI]}×`, cam: camKey, overlays: {...ov}},

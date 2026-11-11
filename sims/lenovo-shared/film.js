@@ -49,7 +49,7 @@ export const selectAt = (t) => {
   let at = -9;
   for (const e of SCRIPT) {
     if (e.t > t) break;
-    if (e.select) [sel, at] = [e.select, e.t];
+    if (e.select) [sel, at] = [NODES.has(e.select) ? e.select : null, e.t];
     else if (e.stage !== undefined || e.riskView) [sel, at] = [null, e.t];
   }
   return {sel, at};
@@ -91,7 +91,7 @@ export function focusView(v, c, size, k) {
 // ------------------------------------------------------------ the operator's pointer
 const REST = [[800, 520], [720, 440], [900, 470], [760, 560]];
 export function makeCursor(ui) {
-  const EV = SCRIPT.map((e) => {
+  const EV = SCRIPT.filter((e) => !e.select || NODES.has(e.select)).map((e) => {
     let spot;
     if (e.stage !== undefined) spot = ui.stageSpot(e.stage);
     else if (e.select) spot = ui.bomSpot(BOM.findIndex((g) => g.ids.includes(e.select)));
