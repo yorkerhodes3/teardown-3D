@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "id": "teardown-3d",
+  "title": "teardown",
+  "repo": "yorkerhodes3/teardown-3D",
+  "summary": "A Claude Code skill that builds any machine as an offline 3D simulator you can take apart, extended here with a BOM-driven Lenovo AI rack teardown that highlights parts named by external risk signals.",
+  "kind": "tool",
+  "methodTags": [
+    "digital-twins",
+    "applied-ai",
+    "frontier-models",
+    "open-source"
+  ],
+  "domainTags": [
+    "supply-chain-resilience",
+    "creative-media"
+  ],
+  "contribution": {
+    "date": "2026-11-11",
+    "role": "co-built",
+    "roleNote": "Extends elvarofficial/teardown.",
+    "credits": [
+      {
+        "name": "elvarofficial",
+        "github": "elvarofficial",
+        "role": "Original author"
+      },
+      {
+        "name": "whaleyxbt",
+        "github": "whaleyxbt",
+        "role": "Original author"
+      },
+      {
+        "name": "Barty-Bart",
+        "github": "Barty-Bart",
+        "role": "Contributor"
+      }
+    ]
+  },
+  "narrative": {
+    "problem": "Seeing how a machine works, or which physical part a component or supplier risk signal affects, usually means reading diagrams, spec sheets and bills of materials separately instead of inspecting the parts in context.",
+    "decision": "Has Claude build each machine as one offline HTML page of procedural Three.js geometry; the Lenovo rack reads every part, count, dimension and wattage from a swappable BOM file and accepts risk signals by URL, postMessage or a JavaScript API.",
+    "tradeoff": "Procedural geometry is not vendor CAD, so dimensions and wattages are illustrative, and different mechanical architectures need new geometry rather than a same-shape SKU swap.",
+    "limitation": "Rack presets are illustrative examples, not certified order BOMs; the default risk signals are fictional, and the fan switch animates rotors without simulating airflow, cooling or electrical state.",
+    "caveat": "Not affiliated with or endorsed by Lenovo, NVIDIA or AMD. Dimensions, specifications and wattages are illustrative, and the default risk signals are fictional demo data, not findings about any real product or supplier."
+  },
+  "evidence": {
+    "level": "working-demo",
+    "links": [
+      {
+        "label": "Latest commit",
+        "url": "https://github.com/yorkerhodes3/teardown-3D/commit/9169d94cd3500bd7609b4b18a90ca6d6a4547440",
+        "date": "2026-11-11"
+      },
+      {
+        "label": "README",
+        "url": "https://github.com/yorkerhodes3/teardown-3D#readme",
+        "date": "2026-11-11"
+      }
+    ]
+  },
+  "links": {
+    "source": "https://github.com/yorkerhodes3/teardown-3D"
+  },
+  "images": [
+    {
+      "id": "lenovo-rack",
+      "src": "docs/lenovo-rack.png",
+      "alt": "Lenovo AI Rack teardown at stage 00 showing a closed 42U cabinet, a rack elevation with GPU node 4 marked at risk, a power panel, a bill of materials with flagged parts in red, risk signals and teardown stage controls.",
+      "caption": "The featured Lenovo rack teardown: bill of materials, power budget and red highlights on the parts an external risk signal names.",
+      "credit": "Image from the teardown-3D repository",
+      "source": "repository file docs/lenovo-rack.png"
+    },
+    {
+      "id": "bee",
+      "src": "docs/bee.gif",
+      "alt": "Mellis HB-7 robotic bee simulator with an exploded abdomen in the centre and surrounding panels for wing beat, power, leg servos, flight, assemblies and subsystems.",
+      "caption": "An example from the upstream skill: a fictional robotic bee built as a take-apart simulator with live instrument panels.",
+      "credit": "Image from the teardown-3D repository (upstream elvarofficial/teardown example)",
+      "source": "repository file docs/bee.gif"
+    },
+    {
+      "id": "scorpion",
+      "src": "docs/scorpion.gif",
+      "alt": "Telson SC-8 robotic scorpion simulator standing in the centre, with panels for gait, tail strike, leg servos, claw grip, assemblies and an operation log.",
+      "caption": "Another upstream example: every panel reads the machine's own numbers, and the page tours itself when left alone.",
+      "credit": "Image from the teardown-3D repository (upstream elvarofficial/teardown example)",
+      "source": "repository file docs/scorpion.gif"
+    }
+  ],
+  "defaultImageId": "lenovo-rack"
+}
